@@ -11,7 +11,7 @@ import random
 
 class CVDestinationProvider:
 
-    def __init__(self, loopDuration, debug = False, mirror = True, header = False):
+    def __init__(self, loopDuration, debug = False, mirror = True, header = True):
 
         self.threshold = 0.55        # Main threshold for obj detection [aka, sensitivity]
         self.toMirror = mirror      # Mirrors the projected frames (Use True if you're using a webcam & Left and right are mirrored)
@@ -123,22 +123,24 @@ class CVDestinationProvider:
             looptime = time()
 
             # # Display OpenCV Video Result
-            # frame = cv.line(frame,(640,0),(640,1000),(255,255,255),7)   # Draw Center Line
+            frame = cv.line(frame,(640,0),(640,1000),(255,255,255),7)   # Draw Center Line
             
-            # if(self.header):                                                                                                                     # Toggle Headers
-            #     frame = cv.putText(frame, 'Header_1', (220,60), self.font, self.header_scale, self.header_color, self.header_thickness, cv.LINE_AA)             # Display Left Header
-            #     frame = cv.putText(frame, 'Header_2', (920,60), self.font, self.header_scale, self.header_color, self.header_thickness, cv.LINE_AA)             # Display Right Header
+            if(self.header):                                                                                                                     # Toggle Headers
+                frame = cv.putText(frame, f'{destination1}', (220,60), self.font, self.header_scale, self.header_color, self.header_thickness, cv.LINE_AA)             # Display Left Header
+                frame = cv.putText(frame, f'{destination2}', (920,60), self.font, self.header_scale, self.header_color, self.header_thickness, cv.LINE_AA)             # Display Right Header
                 
-            # if(self.debug):                                                                                                                      # Toggle Debug
-            #     frame = cv.putText(frame, 'Human Detection Demo', (20,610), self.font, self.font_scale, self.debug_Colour, 1, cv.LINE_AA)                  # Display Project Name
-            #     frame = cv.putText(frame, 'Human Detection Demo', (20,610), self.font, self.font_scale, self.debug_Colour, 1, cv.LINE_AA)                  # Display Project Name (Duplicated for opacity bold)
-            #     frame = cv.putText(frame, f'FPS: {fps}', (20,640), self.font, self.debug_fontScale, self.debug_Colour, 1, cv.LINE_AA)                      # Display FPS Count
-            #     frame = cv.putText(frame, f'Left Count: {left_count}', (20,670), self.font, self.debug_fontScale, self.debug_Colour, 1, cv.LINE_AA)        # Display Left Count
-            #     frame = cv.putText(frame, f'Right Count: {right_count}', (20,700), self.font, self.debug_fontScale, self.debug_Colour, 1, cv.LINE_AA)      # Display Right Count
-            #     frame = cv.putText(frame, f'Timer: Xs', (1130,700), self.font, self.debug_fontScale, self.debug_Colour, 1, cv.LINE_AA)                     # Display Timer
+            if(self.debug):                                                                                                                      # Toggle Debug
+                frame = cv.putText(frame, 'Human Detection Demo', (20,610), self.font, self.font_scale, self.debug_Colour, 1, cv.LINE_AA)                  # Display Project Name
+                frame = cv.putText(frame, 'Human Detection Demo', (20,610), self.font, self.font_scale, self.debug_Colour, 1, cv.LINE_AA)                  # Display Project Name (Duplicated for opacity bold)
+                frame = cv.putText(frame, f'FPS: {fps}', (20,640), self.font, self.debug_fontScale, self.debug_Colour, 1, cv.LINE_AA)                      # Display FPS Count
+                frame = cv.putText(frame, f'Left Count: {left_count}', (20,670), self.font, self.debug_fontScale, self.debug_Colour, 1, cv.LINE_AA)        # Display Left Count
+                frame = cv.putText(frame, f'Right Count: {right_count}', (20,700), self.font, self.debug_fontScale, self.debug_Colour, 1, cv.LINE_AA)      # Display Right Count
+                frame = cv.putText(frame, f'Timer: Xs', (1130,700), self.font, self.debug_fontScale, self.debug_Colour, 1, cv.LINE_AA)                     # Display Timer
 
 
             cv.imshow(f'Human Detection', frame)
+            if cv.waitKey(1) == 27: 
+                break 
 
         self.video.release()
         cv.destroyAllWindows()
@@ -146,5 +148,4 @@ class CVDestinationProvider:
         return destination1 if left_count > right_count else destination2 
 
 provider = CVDestinationProvider(7)
-
-print(provider.getNextDestination(["1", "2", "3", "4", "5"]))
+print(provider.getNextDestination(["AMK", "Punggol", "Changi", "East Coast"]))
