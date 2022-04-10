@@ -1,14 +1,14 @@
 # Made By Addison Chua (https://github.com/NotAddison)
 # SideNote : V2 uses an estimated center dot from the coordinates of the Bondary Boxes (BBox) to determine the number of people on each side (left & right)
 
-# Modules (OpenCV, time (FPS))
-from turtle import right
 import cv2 as cv 
 from time import time
 import random
+from requests import post
+
+URL = "https://overflow-robotics-api.herokuapp.com"
 
 # --- ⚙ OpenCV Settings ⚙ ---
-
 class CVDestinationProvider:
 
     def __init__(self, loopDuration, debug = False, mirror = True, header = True):
@@ -147,5 +147,10 @@ class CVDestinationProvider:
 
         return destination1 if left_count > right_count else destination2 
 
-provider = CVDestinationProvider(7)
-print(provider.getNextDestination(["AMK", "Punggol", "Changi", "East Coast"]))
+provider = CVDestinationProvider(7) #Number is duration CV will run for
+destination = provider.getNextDestination(["Jurong East", "Woodlands", "Bishan", "Botanic Gardens", "Buona Vista", "Clementi", "Haw Par Villa", "HarbourFront", "City Hall", "Orchard", "Serangoon", "Paya Lebar", "Changi", "Esplanade", "Marina Bay"])
+
+print(destination)
+
+postData = {'Destination' : destination}
+print(post(URL, data = postData).text)

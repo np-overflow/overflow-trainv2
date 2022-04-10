@@ -1,10 +1,7 @@
 import requests
 import time
 
-#TODO: change to proper url
-#       get hosting of old api site
-URL = "http://train.np-overflow.club/"
-
+URL = "https://overflow-robotics-api.herokuapp.com"
 
 class DestinationProvider:
     def __init__(self):
@@ -14,10 +11,10 @@ class DestinationProvider:
         sent_waiting_message = False
         while True:
             try:
-                response = requests.delete(URL + "api/orders/popfirst")
-                if response.status_code == 200:
-                    return response.json()
-                elif response.status_code == 404:
+                res = requests.get(URL)
+                if res.status_code == 200:
+                    return res.json()
+                elif res.status_code == 404:
                     if not sent_waiting_message:
                         print("Waiting for next destination...")
                         sent_waiting_message = True

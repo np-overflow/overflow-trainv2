@@ -20,7 +20,7 @@ class TrainService:
 
         while True:
             dest_data = self.provider.get_next_destination()
-            dest_station = self.stations.get_by_name(dest_data["destination"])
+            dest_station = self.stations.get_by_name(dest_data["Destination"])
             if dest_station == None:
                 print("Invalid destination: " + dest_data)
                 continue
