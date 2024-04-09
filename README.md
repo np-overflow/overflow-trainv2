@@ -52,8 +52,8 @@ python destination.py
 4. When the Ev3 has joined the network, ssh into the Ev3 ([Connecting to Ev3 Using SSH](https://www.ev3dev.org/docs/tutorials/connecting-to-ev3dev-with-ssh/))
 5. When you have successfully ssh'ed into the Ev3, install pip
 ``` bash
-wget https://bootstrap.pypa.io/pip/3.5/get-pip.py
-python get-pip.py
+wget https://bootstrap.pypa.io/pip/3.5/get-pip.py # If the network the Ev3 is connected to the IMac does not have internet access, download the get-pip.py file on the IMac while it is connected to a network with internet and transfer it to the Ev3 when you rejoin the network with the Ev3
+python3 get-pip.py
 ```
 6. Install Ev3Dev Browser in VSCode ([ev3dev-browser](https://marketplace.visualstudio.com/items?itemName=ev3dev.ev3dev-browser))
 7. Open up a new terminal and go to the ev3 directory
@@ -64,5 +64,10 @@ code . # Open up VSCode in this directory
 ```
 8. Open up the 'EV3DEV DEVICE BROWSER' tab in VSCode and connect to the Ev3
 9. Transfer the workspace into the Ev3
-10. Using the Ev3, navigate to the ev3 folder and select **main.py**, make sure that the broker is running. 
-11. When the Ev3 *beeps* run destination.py on the computer and off you go!
+10. Using the Ev3, navigate to the ev3 folder 
+11. Install the necessary modules in **requirements.txt** 
+``` bash
+pip3 install -r requirements.txt # Make sure the Ev3 is connected to a network with internet access
+```
+12. After they have been installed, start up the broker and run **main.py** 
+13. When the Ev3 *beeps* run destination.py on the computer and off you go!
