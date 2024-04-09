@@ -24,9 +24,9 @@ white white white
 
 '''
 
-LINE_PT = 40
-BACKGROUND_PT = 70
-STATION_PT = 90
+LINE_PT = 20
+BACKGROUND_PT = 40
+STATION_PT = 10
 
 class TrainRobot:
     def __init__(self):
@@ -36,7 +36,6 @@ class TrainRobot:
 
         self.tank = MoveTank(OUTPUT_B, OUTPUT_C)
         self.tank.gyro = GyroSensor()
-        self.tank.gyro.calibrate()
         self.tank.gyro.reset()
 
         self.colour_left = ColorSensor(INPUT_2)
@@ -101,7 +100,6 @@ class TrainRobot:
 
     def action_turn_left(self):
         print("action_turn_left")
-        self.tank.gyro.reset()
         self.tank.turn_degrees(
             speed=SpeedPercent(5),
             target_angle=-90,
@@ -110,7 +108,6 @@ class TrainRobot:
 
     def action_turn_right(self):
         print("action_turn_right")
-        self.tank.gyro.reset()
         self.tank.turn_degrees(
             speed=SpeedPercent(5),
             target_angle=90,
@@ -119,7 +116,6 @@ class TrainRobot:
 
     def action_turn_back(self):
         print("action_turn_back")
-        self.tank.gyro.reset()
         self.tank.turn_degrees(
             speed=SpeedPercent(5),
             target_angle=180,
@@ -127,7 +123,7 @@ class TrainRobot:
         )
 
     def at_station(self):
-        return self.colour_center.value() > STATION_PT
+        return self.colour_center.value() < STATION_PT
 
     def speak(self, text):
         if text.lower() == 'beep':

@@ -2,7 +2,7 @@
 import paho.mqtt.subscribe as subscribe
 
 # The hostname or IP address of the remote broker
-HOST = "192.168.0.69"
+HOST = "192.168.0.70"
 
 class DestinationProvider:
     def __init__(self):

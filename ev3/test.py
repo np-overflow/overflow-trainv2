@@ -18,6 +18,18 @@ tank.turn_degrees(
     target_angle=180,
     sleep_time=0.01
 )
+
+tank.turn_degrees(
+    speed=SpeedPercent(5),
+    target_angle=-90,
+    sleep_time=0.01
+)
+
+tank.turn_degrees(
+    speed=SpeedPercent(5),
+    target_angle=90,
+    sleep_time=0.01
+)
 # import paho.mqtt.client as mqtt
 
 # from ev3dev2.motor import LargeMotor, MoveSteering, OUTPUT_B, OUTPUT_C
