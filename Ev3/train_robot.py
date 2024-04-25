@@ -1,24 +1,42 @@
-import os
 from ev3dev2.sound import Sound
-from ev3dev2.motor import LargeMotor, MoveSteering, OUTPUT_B, OUTPUT_C
+from ev3dev2.motor import LargeMotor, MoveSteering, OUTPUT_B, OUTPUT_C, MoveTank, SpeedPercent
 from ev3dev2.sensor import INPUT_2, INPUT_3, INPUT_4
 from ev3dev2.sensor.lego import ColorSensor
+from ev3dev2.sensor.lego import GyroSensor
 
-from stations import Station
 from direction import Direction
 
+'''
+blue green blue
+25 25 25
+30 35 30
 
-BLUE_PT = int(os.getenv("BLUE_PT", "30"))
-WHITE_PT = int(os.getenv("WHITE_PT", "80"))
-STATION_PT = int(os.getenv("STATION_PT", "85"))
-THRESHOLD = (WHITE_PT + BLUE_PT) / 2
+blue red blue
+30 65 30
+30 65 30
 
+blue yellow blue
+30 83 30
+30 80 30
+
+white white white
+95 95 95
+
+'''
+
+LINE_PT = 20
+BACKGROUND_PT = 40
+STATION_PT = 10
 
 class TrainRobot:
     def __init__(self):
         self.motor_left = LargeMotor(OUTPUT_B)
         self.motor_right = LargeMotor(OUTPUT_C)
         self.motors = MoveSteering(OUTPUT_B, OUTPUT_C, motor_class=LargeMotor)
+
+        self.tank = MoveTank(OUTPUT_B, OUTPUT_C)
+        self.tank.gyro = GyroSensor()
+        self.tank.gyro.reset()
 
         self.colour_left = ColorSensor(INPUT_2)
         self.colour_center = ColorSensor(INPUT_3)
@@ -40,8 +58,8 @@ class TrainRobot:
             count += 1
 
     def line_follower(self, power1, power2):
-        right_value = self.colour_right.value() > THRESHOLD
-        left_value = self.colour_left.value() > THRESHOLD
+        right_value = self.colour_right.value() > BACKGROUND_PT
+        left_value = self.colour_left.value() > BACKGROUND_PT
 
         if left_value and right_value:
             pass
@@ -82,18 +100,30 @@ class TrainRobot:
 
     def action_turn_left(self):
         print("action_turn_left")
-        self.move_tank(-12, 12, 190)
+        self.tank.turn_degrees(
+            speed=SpeedPercent(5),
+            target_angle=-90,
+            sleep_time=0.01
+        )
 
     def action_turn_right(self):
         print("action_turn_right")
-        self.move_tank(12, -12, 190)
+        self.tank.turn_degrees(
+            speed=SpeedPercent(5),
+            target_angle=90,
+            sleep_time=0.01
+        )
 
     def action_turn_back(self):
         print("action_turn_back")
-        self.move_tank(-12, 12, 380)
+        self.tank.turn_degrees(
+            speed=SpeedPercent(5),
+            target_angle=180,
+            sleep_time=0.01
+        )
 
     def at_station(self):
-        return self.colour_center.value() > STATION_PT
+        return self.colour_center.value() < STATION_PT
 
     def speak(self, text):
         if text.lower() == 'beep':

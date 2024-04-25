@@ -1,12 +1,19 @@
 # Made By Addison Chua (https://github.com/NotAddison)
+# Modified By Lee Jia Yu (https://github.com/House-Fish)
 # SideNote : V2 uses an estimated center dot from the coordinates of the Bondary Boxes (BBox) to determine the number of people on each side (left & right)
 
 import cv2 as cv 
 from time import time
 import random
-from requests import post
+import paho.mqtt.publish as publish
+import os
 
-URL = "https://overflow-robotics-api.herokuapp.com"
+# Create a directory to store images
+if not os.path.exists("Persons"):
+    os.makedirs("Persons")
+
+# The hostname or IP address of the remote broker
+HOST = "192.168.0.69"
 
 # --- ⚙ OpenCV Settings ⚙ ---
 class CVDestinationProvider:
@@ -34,8 +41,8 @@ class CVDestinationProvider:
         self.debug_Colour = (77, 40, 225)    # Colour of debugging text
 
         # Load Dependency Files
-        config = r'Assets\Dependencies\coco-config.pbtxt'
-        frozen_model = r'Assets\Dependencies\frozen_inference_graph.pb'
+        config = r'Assets/Dependencies/coco-config.pbtxt'
+        frozen_model = r'Assets/Dependencies/frozen_inference_graph.pb'
 
         # Read Pretrained Model
         self.model = cv.dnn_DetectionModel(frozen_model, config)
@@ -70,6 +77,7 @@ class CVDestinationProvider:
         self.loopduration = time() + loopDuration;
 
     def getNextDestination(self, destinations):   
+        raw_frame = None
 
         destination1 = random.choice(destinations)
         destination2 = random.choice(destinations)
@@ -82,6 +90,7 @@ class CVDestinationProvider:
         looptime = time() # Time Bookmark
 
         while time() < self.loopduration:
+            people_boxes = []
             count = 0
             left_count = 0
             right_count = 0
@@ -89,6 +98,7 @@ class CVDestinationProvider:
 
             if(self.toMirror):
                 frame = cv.flip(frame, 1)
+                raw_frame = frame.copy()
 
             roi_left = frame[0:1280, 0:640]
             classIndex, confidence, bbox = self.model.detect(frame, self.threshold)
@@ -109,14 +119,17 @@ class CVDestinationProvider:
                             width = bbox[2] - bbox[1]   # Right Bottom - Left Bottom
                             width_center_coord = int((bbox[0]+ (width/2)) + self.center_offset)
 
-                            # print(f"Width : {width} : {bbox[0]} | ", f"Center: ({width_center_coord})")
+                            # print(f"{person_num} - {bbox[0]} {bbox[1]} {bbox[2]} {bbox[3]}")
+
+                            # Store the bbox details of person in a list  
+                            people_boxes.append(bbox)
                             
                             frame = cv.circle(frame, (width_center_coord, bbox[1]), 3, (255,255,255), self.thickness)
 
                             if (width_center_coord > 640):
                                 right_count += 1
                             else:
-                                left_count += 1
+                                left_count += 1 
 
             # FPS Calculation & output
             fps = (1/(time() - looptime))
@@ -142,6 +155,15 @@ class CVDestinationProvider:
             if cv.waitKey(1) == 27: 
                 break 
 
+        # Crop out the boxes of identified people and save them in the detected_images folder
+        # print(people_boxes)
+
+        for i, person in enumerate(people_boxes):
+            cropped_image = raw_frame[person[1]:person[1] + person[3], person[0]:person[0] + person[2]]
+            image_name = f"Persons/person{i}.jpg"
+
+            cv.imwrite(image_name, cropped_image)
+
         self.video.release()
         cv.destroyAllWindows()
 
@@ -152,5 +174,9 @@ destination = provider.getNextDestination(["Jurong East", "Woodlands", "Bishan",
 
 print(destination)
 
-postData = {'Destination' : destination}
-print(post(URL, data = postData).text)
+try:
+    publish.single("bot/destination", destination, hostname=HOST)
+except OSError:
+    print("Error, unable to connect to mqtt broker server")
+except Exception as e:
+    print(e)

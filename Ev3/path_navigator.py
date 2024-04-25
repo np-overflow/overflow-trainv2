@@ -14,12 +14,12 @@ class PathNavigator:
             for route in routers:
                 adj_stations = route[-1].get_linked_stations()
                 for station_name in adj_stations:
-                    station = self.stations.get_by_name(station_name)
+                    station = self.stations.get_by_name(station_name) # an adjacent station
                     if station not in stations_to_traverse:
                         continue
                     stations_to_traverse.remove(station)    
-                    new_route = [*route, station]
+                    new_route = [*route, station] 
                     if station == end_station:
-                        return new_route
-                    new_routes.append(new_route)
+                        return new_route # returns the full route to the end_station
+                    new_routes.append(new_route) 
                 routers.extend(new_routes)

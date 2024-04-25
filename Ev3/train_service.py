@@ -1,7 +1,6 @@
 from direction import Direction
 from stations import Station
 
-
 class TrainService:
     def __init__(self, provider, stations, train, driver, navigator):
         self.provider = provider
@@ -20,16 +19,17 @@ class TrainService:
 
         while True:
             dest_data = self.provider.get_next_destination()
-            dest_station = self.stations.get_by_name(dest_data["Destination"])
+            dest_station = self.stations.get_by_name(dest_data)
             if dest_station == None:
                 print("Invalid destination: " + dest_data)
                 continue
 
             self.train.speak(dest_station.name)
             route = self.navigator.route(self.train.location, dest_station)
-            print(route)
+            # print("Route: " + route)
+            print("Beginning route!")
             self.driver.drive(route)
-            self.train.speak("destination reached")
+            self.train.speak("Destination reached!")
 
     def _create_stations(self):
         self.stations.add_station(Station("Jurong East").connect({"Woodlands": Direction.NORTH,
